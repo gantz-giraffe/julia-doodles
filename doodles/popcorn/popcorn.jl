@@ -8,25 +8,22 @@ function scale(in,minA,maxA,minB,maxB)
  end
  
 
-function popcorn_iter(width::Integer, height::Integer, v::Vector{Float64}, h = 0.05, incs::Integer = 4; a= 3.0, b = 3.0)
+function popcorn_iter(width::Integer, height::Integer, v::Vector{Float64}, h = 0.05, a= 3.0, b = 3.0)
     x = v[1]
     y = v[2]
-    xscale = 4
-    yscale = 4
-    if incs > 0
-     n = [x - h*sin(y*yscale + tan(a * y*yscale)), y - h*sin(x*xscale + tan(b * x*xscale))]
-     popcorn_iter(width,height,n,h,incs-1,a=a,b=b)
-    else
-     [scale(x,-1.1, 1.1, 1,width), scale(y,-1.1, 1.1, 1,height)]
-    end
+    xscale = 17.0*x #try changing xscale or yscale to 1/xscale or 1/yscale in different parts
+    yscale = 11.9*y #or squaring xscale or yscale
+    xn = x - h*sin(1/yscale + tan(a^2 * yscale)) 
+    yn = y - h*sin(1/xscale + tan(b * xscale^2))
+    [scale(xn,-1.1, 1.1, 1,width), scale(yn,-1.1, 1.1, 1,height)]
 end
 
 
-function popcorn_coords(width::Integer, height::Integer, h::Float64 = 0.05,  a::Float64 = 3.0, b::Float64 = 3.0, n::Integer= 1)
+function popcorn_coords(width::Integer, height::Integer, h::Float64 = 0.05, a::Float64 = 3.0, b::Float64 = 3.0)
     tw = width/2
     th = height/2
     indmat = [(i,j) for i= range(-1.0,1.0,length= width), j= range(-1.0,1.0,length= height)]
-    map(v -> popcorn_iter(width, height, [v[1],v[2]], h, n, a=a, b=b), indmat)
+    map(v -> popcorn_iter(width, height, [v[1],v[2]], h, a, b), indmat)
 end
 
 function fract_set_coeff(v)
@@ -40,9 +37,9 @@ function fract_set_coeff(v)
 end
 
 
-function popcorn_hist(width::Integer, height::Integer, h= 0.05, n=1;  a=3.0, b=3.0)
+function popcorn_hist(width::Integer, height::Integer, h= 0.05, a=3.0, b=3.0)
     zmat = zeros(width,height)
-    cmat = popcorn_coords(width,height,h,a,b,n)
+    cmat = popcorn_coords(width,height,h,a,b)
     cimat = map(x-> map(Integer,[trunc(x[1]),trunc(x[2])]), cmat)
     cfmat = map(fract_set_coeff,cmat)
     for i = 1:width-1, j = 1:height-1
@@ -52,7 +49,6 @@ function popcorn_hist(width::Integer, height::Integer, h= 0.05, n=1;  a=3.0, b=3
     zmat
 end
 
-            
-img = map(Gray,popcorn_hist(1000,1000,0.1,1,a=3.0,b=3.0)/8)
+img = imresize(map(Gray,popcorn_hist(5000,5000,0.08,0.4,0.09)/9),ratio=0.2)
 
 save(string("e:/code/Julia/julia-doodles/doodles/popcorn/poopcorn",time_ns(),".png"),map(clamp01nan,img))
