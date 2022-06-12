@@ -1,6 +1,6 @@
 using Images
 
-function pixelsort(img,dir, mask)
+function rastersort(img,dir, mask)
     srt = sort(img, by= (a -> Gray(a)) ,dims=dir)
     x = 1:size(img,1)
     y = 1:size(img,2)
@@ -11,7 +11,7 @@ function pixelsort(img,dir, mask)
     srt
 end
 
-function pixelsort(img,maskx,masky; sortby = a -> Gray(a))
+function rastersort(img,maskx,masky; sortby = a -> Gray(a))
     out = copy(img)
     srtx = sort(img, by= sortby ,dims=1)
     srty = sort(img, by= sortby ,dims=2)
@@ -40,6 +40,6 @@ end
 
 orig = load("C:/Code/Julia/sillyhippo.jpg")
 
-chunky = pixelsort(orig, a -> (blue(a) > 0.51), a -> (red(a) > 0.4))
+chunky = rastersort(orig, a -> (blue(a) > 0.51), a -> (red(a) > 0.4))
 
 save("C:/Code/Julia/sillyhipposort.jpg", chunky)
