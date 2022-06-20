@@ -21,10 +21,14 @@ function curvetan(sp::ParametricSpline, t::Real; delta= 0.00001)
     p -> [dx*p,dy*p] + t0
 end
 
-function curvetanline(fun,len)
+function curvetanline(fun,len,type=:vec)
     lpnt = fun(-len)
     rpnt = fun(len)
-    map(vec2pnt,[lpnt,rpnt])
+    if type == :vec
+        [lpnt,rpnt]
+    elseif type == :point
+        map(vec2pnt,[lpnt,rpnt])
+    end
 end
 
 function ParSpiral(t,freq,decay,magnitude,type=:vec)
@@ -46,7 +50,7 @@ end
     splinspir = ParametricSpline(pnts2mat(pnts),s=0.3)
     splinpnts = map(vec2pnt,map(b -> evaluate(splinspir, b), range(start=0,stop=1,step=0.0005)))
     mytan = curvetan(splinspir,0.07)
-    tanpnts = curvetanline(mytan,0.0132)
+    tanpnts = curvetanline(mytan,0.0132,:point)
     line(tanpnts[1],tanpnts[2],action=:stroke)
     circle(vec2pnt(mytan(0.0001)),5,action=:stroke)
     poly(splinpnts,action=:stroke)
