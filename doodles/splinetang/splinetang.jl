@@ -57,7 +57,7 @@ end
         tanpnts = curvetanline(mytan,0.001,:point)
         line(tanpnts[1],tanpnts[2],action=:stroke)
         scale = 1-(i/2)
-        circle(vec2pnt(mytan(0.0,0.006*scale)),2*scale,action=:fill)        
+        circle(vec2pnt(mytan(0.005*i,0.006*scale)),2*scale,action=:fill)        
     end
     
 end
